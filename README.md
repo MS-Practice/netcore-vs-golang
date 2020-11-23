@@ -88,9 +88,9 @@ TIME_WAIT file descriptors: ~10
 
 ## My machine spec
 
-* MacBook Pro (15-inch, 2017)
-* Processor 2,9 GHz Intel Core i7
-* Memory 16 GB 2133 MHz LPDDR3
-* Docker version 18.06.0-ce (4 CPUs, 2 GiB memory)
-* Golang 1.11.2
-* Dotnet 2.1.0
+* MacBook Pro (16-inch, 2019)
+* Processor 2,6 GHz Intel Core i7
+* Memory 16 GB 2667 MHz LPDDR3
+* Docker version 19.03.0-ce (4 CPUs, 2 GiB memory)
+* Golang 1.15.2
+* Dotnet 5.0.0

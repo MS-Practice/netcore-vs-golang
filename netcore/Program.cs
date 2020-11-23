@@ -11,7 +11,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 class Program
 {
@@ -65,10 +66,10 @@ class Startup
                 var str = await rsp.Content.ReadAsStringAsync();
 
                 // deserialize
-                var obj = JsonConvert.DeserializeObject<Response>(str);
+                var obj = JsonSerializer.Deserialize<Response>(str);
 
                 // serialize
-                var json = JsonConvert.SerializeObject(obj);
+                var json = JsonSerializer.Serialize<Response>(obj);
 
                 ctx.Response.ContentType = "application/json";
                 await ctx.Response.WriteAsync(json);
