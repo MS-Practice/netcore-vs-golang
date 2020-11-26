@@ -1,2 +1,6 @@
 netcore/bin
 netcore/obj
+.vs
+.bin
+.obj
+.[pP]roperties

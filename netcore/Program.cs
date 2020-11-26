@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Dapper;
 
 class Program
 {
@@ -21,12 +22,13 @@ class Program
         CreateWebHostBuilder(args).Build().Run();
     }
 
-    public static IWebHostBuilder CreateWebHostBuilder(string[] args) {
+    public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+    {
         var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddEnvironmentVariables()
                 .Build();
- 
+
         var host = new WebHostBuilder()
             .UseKestrel()
             .UseContentRoot(Directory.GetCurrentDirectory())
@@ -43,6 +45,14 @@ class Response
     public string Id { get; set; }
     public string Name { get; set; }
     public long Time { get; set; }
+}
+
+public class User
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public DateTimeOffset Birthday { get; set; }
 }
 
 class Startup
@@ -80,10 +90,22 @@ class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.Map("/test", HandleTest);
+        app.Map("/user", UserHandlTest);
 
         app.Run(async ctx =>
         {
             await ctx.Response.WriteAsync($"Hello, {ctx.Request.Path}");
+        });
+    }
+
+    private void UserHandlTest(IApplicationBuilder app)
+    {
+        app.Run(async ctx =>
+        {
+            using (var connection = new MySqlConnector.MySqlConnection("server=192.168.3.125;database=go_testdb;uid=root;pwd=123456;charset='utf8';SslMode=None"))
+            {
+                _ = await connection.QueryFirstAsync<User>("select id,name,age,birthday from users");
+            }
         });
     }
 }
