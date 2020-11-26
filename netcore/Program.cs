@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Dapper;
+//using Dapper;
 
 class Program
 {
@@ -104,7 +104,13 @@ class Startup
         {
             using (var connection = new MySqlConnector.MySqlConnection("server=192.168.3.125;database=go_testdb;uid=root;pwd=123456;charset='utf8';SslMode=None"))
             {
-                _ = await connection.QueryFirstAsync<User>("select id,name,age,birthday from users");
+                await connection.OpenAsync();
+                using var command = connection.CreateCommand();
+                command.CommandText = "select id,name,age,birthday from users where id = 1";
+                command.Connection = connection;
+                command.CommandTimeout = 1;
+                var reader = await command.ExecuteReaderAsync();
+                //_ = await connection.QueryFirstAsync<User>("select id,name,age,birthday from users");
             }
         });
     }
