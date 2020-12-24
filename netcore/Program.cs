@@ -11,15 +11,23 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NLog.Web;
+using Serilog;
+using Serilog.Events;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 //using Dapper;
 
 class Program
 {
     public static void Main(string[] args)
     {
-        CreateWebHostBuilder(args).Build().Run();
+        CreateWebHostBuilder(args)
+            //.UseNLog()
+            .Build()
+            .Run();
     }
 
     public static IWebHostBuilder CreateWebHostBuilder(string[] args)
@@ -33,8 +41,17 @@ class Program
             .UseKestrel()
             .UseContentRoot(Directory.GetCurrentDirectory())
             .UseConfiguration(config)
-            .UseUrls("http://*:5000")
-            .UseStartup<Startup>();
+            .UseUrls("http://*:5002")
+            .UseStartup<Startup>()
+            //.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
+            //        .ReadFrom.Configuration(hostingContext.Configuration)
+            //        .Enrich.FromLogContext()
+            //        .WriteTo.File("logs/.log", outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}"))
+            //.ConfigureLogging(logging => {
+            //    logging.ClearProviders();
+            //    logging.SetMinimumLevel(LogLevel.Information);
+            //})
+            ;
 
         return host;
     }
@@ -89,11 +106,15 @@ class Startup
 
     public void Configure(IApplicationBuilder app)
     {
+        //app.UseSerilogRequestLogging();
+        //var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
         app.Map("/test", HandleTest);
         app.Map("/user", UserHandlTest);
 
         app.Run(async ctx =>
         {
+            //var logger = ctx.RequestServices.GetService<Serilog.ILogger>();
+            //logger.Information($"Hello, {ctx.Request.Path}");
             await ctx.Response.WriteAsync($"Hello, {ctx.Request.Path}");
         });
     }
